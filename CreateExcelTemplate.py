@@ -2,9 +2,9 @@ import pandas as pd
 
 # 1. Dummy Data for Sheet 1: Holdings
 holdings_data = {
-    "Symbol": ["SBIN", "ICICIPRULI", "GROWW"],
-    "Qty": [26, 6, 150],
-    "Avg Price": [574.00, 2165.00, 100.00]
+    "Symbol": ["SBIN", "ICICIPRULI", "HDFCBANK"],
+    "Qty": [26, 6, 15],
+    "Avg Price": [574.00, 2165.00, 1650.00]
 }
 
 # 2. Dummy Data for Sheet 2: Watchlist
