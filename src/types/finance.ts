@@ -369,3 +369,50 @@ export interface SectorRebalanceOrder {
   rationale: string;
 }
 
+export type MacroCyclePhase = 'EARLY_CYCLE' | 'MID_CYCLE' | 'LATE_CYCLE' | 'RECESSION';
+
+export interface SectorValuationMetric {
+  sector: EquitySector;
+  currentPE: number;
+  historical5YPE: number;
+  currentPB: number;
+  dividendYield: number;
+  roe: number;
+  beta: number;
+  valuationStatus: 'CHEAP' | 'FAIR' | 'EXPENSIVE';
+  discountPremiumPercent: number; // negative = discount (cheap), positive = premium
+  catalyst: string;
+}
+
+export interface SectorShockScenario {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  sectorShocks: Record<EquitySector, number>; // in percentage e.g. -20 for -20%
+}
+
+export interface SipRebalanceMonth {
+  month: number;
+  title: string;
+  monthlyAmount: number;
+  sectorAllocations: {
+    sector: EquitySector;
+    amount: number;
+    percentage: number;
+    suggestedStocks: string[];
+    rationale: string;
+  }[];
+}
+
+export interface BrokerBasketOrder {
+  tradingsymbol: string;
+  exchange: 'NSE' | 'BSE' | 'NASDAQ';
+  transaction_type: 'BUY' | 'SELL';
+  order_type: 'MARKET' | 'LIMIT';
+  product: 'CNC' | 'MIS';
+  quantity: number;
+  price: number;
+  sector: EquitySector;
+}
+

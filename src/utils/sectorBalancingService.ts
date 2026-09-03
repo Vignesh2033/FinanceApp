@@ -5,7 +5,11 @@ import {
   SectorBenchmarkModel,
   SectorRebalanceOrder,
   SectorRecommendedStock,
-  CurrencyCode
+  SectorValuationMetric,
+  SectorShockScenario,
+  SipRebalanceMonth,
+  BrokerBasketOrder,
+  MacroCyclePhase
 } from '../types/finance';
 
 export const SECTOR_COLORS: Record<EquitySector, string> = {
@@ -21,6 +25,310 @@ export const SECTOR_COLORS: Record<EquitySector, string> = {
   'Retail & Discretionary': '#f97316',
   'Other / Diversified': '#a855f7'
 };
+
+export const SECTOR_VALUATION_METRICS: Record<EquitySector, SectorValuationMetric> = {
+  'Banking & Financials': {
+    sector: 'Banking & Financials',
+    currentPE: 16.8,
+    historical5YPE: 21.2,
+    currentPB: 2.1,
+    dividendYield: 1.4,
+    roe: 17.5,
+    beta: 1.15,
+    valuationStatus: 'CHEAP',
+    discountPremiumPercent: -20.8,
+    catalyst: 'Credit expansion cycle, pristine asset quality, and expanding net interest margins.'
+  },
+  'Information Technology & AI': {
+    sector: 'Information Technology & AI',
+    currentPE: 33.4,
+    historical5YPE: 26.5,
+    currentPB: 7.8,
+    dividendYield: 1.1,
+    roe: 28.4,
+    beta: 1.32,
+    valuationStatus: 'EXPENSIVE',
+    discountPremiumPercent: 26.0,
+    catalyst: 'Enterprise GenAI infrastructure buildout, cloud hyper-scaler capex, and automation.'
+  },
+  'Energy & Conglomerate': {
+    sector: 'Energy & Conglomerate',
+    currentPE: 17.5,
+    historical5YPE: 19.0,
+    currentPB: 1.8,
+    dividendYield: 2.8,
+    roe: 14.2,
+    beta: 0.95,
+    valuationStatus: 'FAIR',
+    discountPremiumPercent: -7.9,
+    catalyst: 'Green hydrogen transition, domestic gas pricing stability, and telecom/retail spinoffs.'
+  },
+  'Automobile & EV': {
+    sector: 'Automobile & EV',
+    currentPE: 21.0,
+    historical5YPE: 24.5,
+    currentPB: 3.6,
+    dividendYield: 1.6,
+    roe: 22.0,
+    beta: 1.18,
+    valuationStatus: 'CHEAP',
+    discountPremiumPercent: -14.3,
+    catalyst: 'Electric vehicle adoption, premium SUV demand surge, and export expansion.'
+  },
+  'FMCG & Consumer Staples': {
+    sector: 'FMCG & Consumer Staples',
+    currentPE: 44.5,
+    historical5YPE: 47.0,
+    currentPB: 10.2,
+    dividendYield: 2.6,
+    roe: 34.0,
+    beta: 0.62,
+    valuationStatus: 'FAIR',
+    discountPremiumPercent: -5.3,
+    catalyst: 'Rural consumption recovery, direct raw-material deflation, and high pricing power.'
+  },
+  'Healthcare & Pharma': {
+    sector: 'Healthcare & Pharma',
+    currentPE: 28.5,
+    historical5YPE: 32.0,
+    currentPB: 4.2,
+    dividendYield: 1.0,
+    roe: 19.5,
+    beta: 0.68,
+    valuationStatus: 'CHEAP',
+    discountPremiumPercent: -10.9,
+    catalyst: 'US FDA specialty pipeline approvals, patent cliff unlocks, and domestic chronic therapies.'
+  },
+  'Infra, Defence & Capex': {
+    sector: 'Infra, Defence & Capex',
+    currentPE: 36.0,
+    historical5YPE: 28.0,
+    currentPB: 4.8,
+    dividendYield: 1.2,
+    roe: 18.0,
+    beta: 1.24,
+    valuationStatus: 'EXPENSIVE',
+    discountPremiumPercent: 28.6,
+    catalyst: 'Government Make-in-India mandates, multi-year defence export order books, and railway capex.'
+  },
+  'Metals & Mining': {
+    sector: 'Metals & Mining',
+    currentPE: 14.2,
+    historical5YPE: 15.0,
+    currentPB: 1.5,
+    dividendYield: 3.8,
+    roe: 12.5,
+    beta: 1.45,
+    valuationStatus: 'FAIR',
+    discountPremiumPercent: -5.3,
+    catalyst: 'Domestic infrastructure steel consumption and global aluminum beverage can demand.'
+  },
+  'Telecommunications & Internet': {
+    sector: 'Telecommunications & Internet',
+    currentPE: 48.0,
+    historical5YPE: 42.0,
+    currentPB: 5.4,
+    dividendYield: 0.8,
+    roe: 16.0,
+    beta: 1.05,
+    valuationStatus: 'EXPENSIVE',
+    discountPremiumPercent: 14.3,
+    catalyst: 'Tariff price hikes, 5G FWA broadband expansion, and quick-commerce hyper-growth.'
+  },
+  'Retail & Discretionary': {
+    sector: 'Retail & Discretionary',
+    currentPE: 78.0,
+    historical5YPE: 68.0,
+    currentPB: 12.0,
+    dividendYield: 0.6,
+    roe: 24.5,
+    beta: 1.12,
+    valuationStatus: 'EXPENSIVE',
+    discountPremiumPercent: 14.7,
+    catalyst: 'Demographic disposable income surge, premium organized jewelry, and fast fashion retail.'
+  },
+  'Other / Diversified': {
+    sector: 'Other / Diversified',
+    currentPE: 22.0,
+    historical5YPE: 22.0,
+    currentPB: 2.5,
+    dividendYield: 1.5,
+    roe: 15.0,
+    beta: 1.0,
+    valuationStatus: 'FAIR',
+    discountPremiumPercent: 0,
+    catalyst: 'Multi-asset holding.'
+  }
+};
+
+export const MACRO_CYCLE_MODELS: Record<MacroCyclePhase, {
+  name: string;
+  phaseTitle: string;
+  badge: string;
+  description: string;
+  topFavoredSectors: EquitySector[];
+  weights: Record<EquitySector, number>;
+}> = {
+  EARLY_CYCLE: {
+    name: '🌅 Early-Cycle / Economic Recovery',
+    phaseTitle: 'Early Recovery',
+    badge: 'High Beta / Growth',
+    description: 'Interest rates falling, credit growth accelerating, consumer sentiment rebounding. Best for Cyclicals, Autos, Financials & Retail.',
+    topFavoredSectors: ['Banking & Financials', 'Automobile & EV', 'Retail & Discretionary', 'Infra, Defence & Capex'],
+    weights: {
+      'Banking & Financials': 28,
+      'Automobile & EV': 16,
+      'Retail & Discretionary': 14,
+      'Infra, Defence & Capex': 14,
+      'Information Technology & AI': 14,
+      'Energy & Conglomerate': 8,
+      'FMCG & Consumer Staples': 6,
+      'Healthcare & Pharma': 0,
+      'Telecommunications & Internet': 0,
+      'Metals & Mining': 0,
+      'Other / Diversified': 0
+    }
+  },
+  MID_CYCLE: {
+    name: '☀️ Mid-Cycle / Peak Economic Growth',
+    phaseTitle: 'Peak Expansion',
+    badge: 'Tech & Capex',
+    description: 'Corporate profits expanding at peak rates, enterprise capex at high levels, credit robust. Best for Tech/AI, Industrials & Financials.',
+    topFavoredSectors: ['Information Technology & AI', 'Banking & Financials', 'Infra, Defence & Capex'],
+    weights: {
+      'Information Technology & AI': 32,
+      'Banking & Financials': 22,
+      'Infra, Defence & Capex': 16,
+      'Automobile & EV': 12,
+      'Retail & Discretionary': 8,
+      'Energy & Conglomerate': 6,
+      'FMCG & Consumer Staples': 4,
+      'Healthcare & Pharma': 0,
+      'Telecommunications & Internet': 0,
+      'Metals & Mining': 0,
+      'Other / Diversified': 0
+    }
+  },
+  LATE_CYCLE: {
+    name: '🍂 Late-Cycle / Inflation & High Rates',
+    phaseTitle: 'Late Expansion',
+    badge: 'Commodities & Energy',
+    description: 'Capacity constraints, high inflation, tight monetary policy. Best for Energy, Commodities, Healthcare & Cash Flow leaders.',
+    topFavoredSectors: ['Energy & Conglomerate', 'Metals & Mining', 'Healthcare & Pharma', 'Banking & Financials'],
+    weights: {
+      'Energy & Conglomerate': 24,
+      'Banking & Financials': 18,
+      'Metals & Mining': 16,
+      'Healthcare & Pharma': 16,
+      'FMCG & Consumer Staples': 12,
+      'Information Technology & AI': 8,
+      'Automobile & EV': 6,
+      'Infra, Defence & Capex': 0,
+      'Retail & Discretionary': 0,
+      'Telecommunications & Internet': 0,
+      'Other / Diversified': 0
+    }
+  },
+  RECESSION: {
+    name: '❄️ Recession / High Volatility & Crisis',
+    phaseTitle: 'Contraction / Defensive',
+    badge: 'Maximum Capital Protection',
+    description: 'Economic contraction, earnings revisions downwards. Maximum focus on non-cyclical essentials, Healthcare, FMCG & Utilities.',
+    topFavoredSectors: ['FMCG & Consumer Staples', 'Healthcare & Pharma', 'Energy & Conglomerate'],
+    weights: {
+      'FMCG & Consumer Staples': 34,
+      'Healthcare & Pharma': 28,
+      'Banking & Financials': 16,
+      'Energy & Conglomerate': 12,
+      'Telecommunications & Internet': 10,
+      'Information Technology & AI': 0,
+      'Automobile & EV': 0,
+      'Infra, Defence & Capex': 0,
+      'Metals & Mining': 0,
+      'Retail & Discretionary': 0,
+      'Other / Diversified': 0
+    }
+  }
+};
+
+export const STRESS_TEST_SCENARIOS: SectorShockScenario[] = [
+  {
+    id: 'scen-tech-crash',
+    name: '📉 Global Tech & AI Valuation Bubble Pullback (-22%)',
+    description: 'US semiconductor export curbs and enterprise AI capex pause triggers high-valuation multiple compression in IT/AI stocks.',
+    icon: 'TrendingDown',
+    sectorShocks: {
+      'Information Technology & AI': -22,
+      'Retail & Discretionary': -10,
+      'Telecommunications & Internet': -8,
+      'Automobile & EV': -6,
+      'Banking & Financials': -3,
+      'Infra, Defence & Capex': -2,
+      'Metals & Mining': -4,
+      'Energy & Conglomerate': 2,
+      'Healthcare & Pharma': 6,
+      'FMCG & Consumer Staples': 8,
+      'Other / Diversified': 0
+    }
+  },
+  {
+    id: 'scen-oil-shock',
+    name: '🛢️ Geopolitical Middle-East Conflict & Crude Oil Spike ($110/bbl)',
+    description: 'Brent crude surges 35%, boosting upstream energy producers while compressing margins for auto, paints, and airlines.',
+    icon: 'Flame',
+    sectorShocks: {
+      'Energy & Conglomerate': 18,
+      'Metals & Mining': 8,
+      'Healthcare & Pharma': 2,
+      'FMCG & Consumer Staples': -4,
+      'Information Technology & AI': -5,
+      'Banking & Financials': -8,
+      'Infra, Defence & Capex': -10,
+      'Retail & Discretionary': -12,
+      'Automobile & EV': -16,
+      'Telecommunications & Internet': -3,
+      'Other / Diversified': 0
+    }
+  },
+  {
+    id: 'scen-rbi-rate-cut',
+    name: '🏦 RBI 50 bps Surprise Repo Rate Cut & Credit Boom',
+    description: 'Central bank pivots to aggressive dovish easing, triggering a massive liquidity surge into rate-sensitive banking, real estate, and auto stocks.',
+    icon: 'Landmark',
+    sectorShocks: {
+      'Banking & Financials': 14,
+      'Automobile & EV': 12,
+      'Retail & Discretionary': 10,
+      'Infra, Defence & Capex': 9,
+      'Metals & Mining': 6,
+      'Telecommunications & Internet': 5,
+      'Information Technology & AI': 4,
+      'Energy & Conglomerate': 3,
+      'Healthcare & Pharma': -2,
+      'FMCG & Consumer Staples': -3,
+      'Other / Diversified': 0
+    }
+  },
+  {
+    id: 'scen-global-tariff-war',
+    name: '🌍 Global Trade Protectionism & Export Tariff Escalation',
+    description: 'Universal 20% import tariffs disrupt global supply chains, hurting US tech hardware, auto exports, and commodity shipping.',
+    icon: 'ShieldAlert',
+    sectorShocks: {
+      'Information Technology & AI': -15,
+      'Metals & Mining': -14,
+      'Automobile & EV': -12,
+      'Infra, Defence & Capex': 4,
+      'FMCG & Consumer Staples': 6,
+      'Healthcare & Pharma': 5,
+      'Banking & Financials': -6,
+      'Energy & Conglomerate': -2,
+      'Telecommunications & Internet': 3,
+      'Retail & Discretionary': -8,
+      'Other / Diversified': 0
+    }
+  }
+];
 
 export const SECTOR_RECOMMENDED_STOCKS: Record<EquitySector, SectorRecommendedStock[]> = {
   'Banking & Financials': [
@@ -178,7 +486,6 @@ export const PRESET_SECTOR_MODELS: SectorBenchmarkModel[] = [
 export function classifyAssetSector(asset: Asset): EquitySector {
   const name = asset.name.toUpperCase();
   const subCat = (asset.subCategory || '').toUpperCase();
-  const notes = (asset.notes || '').toUpperCase();
   const ticker = (asset.yahooTicker || '').toUpperCase();
 
   // 1. Tech & AI
@@ -205,10 +512,8 @@ export function classifyAssetSector(asset: Asset): EquitySector {
     name.includes('KOTAK') || name.includes('AXIS BANK') ||
     name.includes('BAJAJ FINANCE') || name.includes('BAJFINANCE') ||
     name.includes('JIO FINANCIAL') || name.includes('BANKBEES') ||
-    name.includes('MUTUAL FUND') || subCat.includes('FLEXI CAP') || subCat.includes('INDEX FUND')
+    subCat.includes('FLEXI CAP') || subCat.includes('INDEX FUND')
   ) {
-    // If generic mutual fund, classify as diversified or financial
-    if (subCat.includes('FLEXI CAP') || subCat.includes('MULTI CAP')) return 'Banking & Financials';
     return 'Banking & Financials';
   }
 
@@ -309,6 +614,7 @@ export function calculateSectorAllocations(
   activeSectorsCount: number;
   maxConcentrationPercent: number;
   maxConcentratedSector: EquitySector;
+  portfolioWeightedBeta: number;
 } {
   const equityAssets = assets.filter(
     a => a.category === 'Equity' || a.category === 'Mutual Funds'
@@ -343,7 +649,6 @@ export function calculateSectorAllocations(
     'Other / Diversified': { value: 0, holdings: [] }
   };
 
-  // Aggregate assets into sectors
   equityAssets.forEach(asset => {
     const sector = classifyAssetSector(asset);
     sectorValueMap[sector].value += asset.currentValue;
@@ -357,6 +662,7 @@ export function calculateSectorAllocations(
   let maxConcentrationPercent = 0;
   let maxConcentratedSector: EquitySector = 'Information Technology & AI';
   let activeSectorsCount = 0;
+  let weightedBetaSum = 0;
 
   const items: SectorAllocationItem[] = allSectors.map(sector => {
     const data = sectorValueMap[sector];
@@ -364,6 +670,11 @@ export function calculateSectorAllocations(
     const percentage = totalEquityValue > 0 ? Number(((value / totalEquityValue) * 100).toFixed(1)) : 0;
     const targetPercentage = targetWeights[sector] ?? 0;
     const driftPercent = Number((percentage - targetPercentage).toFixed(1));
+
+    const sectorBeta = SECTOR_VALUATION_METRICS[sector]?.beta || 1.0;
+    if (totalEquityValue > 0) {
+      weightedBetaSum += (value / totalEquityValue) * sectorBeta;
+    }
 
     if (value > 0) activeSectorsCount++;
     if (percentage > maxConcentrationPercent) {
@@ -393,12 +704,15 @@ export function calculateSectorAllocations(
     };
   });
 
+  const portfolioWeightedBeta = Number(weightedBetaSum.toFixed(2)) || 1.0;
+
   return {
     items,
     totalEquityValue,
     activeSectorsCount,
     maxConcentrationPercent,
-    maxConcentratedSector
+    maxConcentratedSector,
+    portfolioWeightedBeta
   };
 }
 
@@ -414,10 +728,8 @@ export function calculateSectorRebalancingOrders(
   const orders: SectorRebalanceOrder[] = [];
 
   if (mode === 'CASH_INJECTION') {
-    // Mode A: Fresh cash allocated strictly to underweight sectors (Zero Tax / Buy Only)
     const newTotalEquity = totalEquityValue + freshCapital;
     
-    // Find all underweight sectors with their rupee deficit
     const deficits = items.map(item => {
       const idealValue = (item.targetPercentage / 100) * newTotalEquity;
       const deficit = idealValue - item.value;
@@ -452,7 +764,6 @@ export function calculateSectorRebalancingOrders(
 
     return orders.sort((a, b) => b.amount - a.amount);
   } else {
-    // Mode B: Full Sector Realignment (Buy & Sell)
     items.forEach(item => {
       const targetVal = (item.targetPercentage / 100) * totalEquityValue;
       const diff = targetVal - item.value;
@@ -489,6 +800,150 @@ export function calculateSectorRebalancingOrders(
 }
 
 /**
+ * Calculates stress test P&L simulation on portfolio
+ */
+export function calculateStressTestImpact(
+  items: SectorAllocationItem[],
+  totalEquityValue: number,
+  scenario: SectorShockScenario
+): {
+  newTotalValue: number;
+  totalPnL: number;
+  totalPnLPercent: number;
+  sectorImpacts: { sector: EquitySector; shockPercent: number; pnl: number; isPositive: boolean }[];
+} {
+  let newTotal = 0;
+  const sectorImpacts = items.map(item => {
+    const shock = scenario.sectorShocks[item.sector] ?? 0;
+    const pnl = item.value * (shock / 100);
+    newTotal += (item.value + pnl);
+    return {
+      sector: item.sector,
+      shockPercent: shock,
+      pnl: Math.round(pnl),
+      isPositive: pnl >= 0
+    };
+  });
+
+  const totalPnL = Math.round(newTotal - totalEquityValue);
+  const totalPnLPercent = totalEquityValue > 0 ? Number(((totalPnL / totalEquityValue) * 100).toFixed(2)) : 0;
+
+  return {
+    newTotalValue: Math.round(newTotal),
+    totalPnL,
+    totalPnLPercent,
+    sectorImpacts: sectorImpacts.sort((a, b) => a.pnl - b.pnl)
+  };
+}
+
+/**
+ * Generates phased 3 to 6-month SIP rebalancing roadmap
+ */
+export function generateSipRoadmap(
+  items: SectorAllocationItem[],
+  totalEquityValue: number,
+  monthlySipAmount: number,
+  months: number = 4
+): SipRebalanceMonth[] {
+  const roadmap: SipRebalanceMonth[] = [];
+  const totalFreshInjected = monthlySipAmount * months;
+  const targetTotal = totalEquityValue + totalFreshInjected;
+
+  // Calculate sector deficits
+  const deficits = items.map(item => {
+    const idealVal = (item.targetPercentage / 100) * targetTotal;
+    const deficit = Math.max(0, idealVal - item.value);
+    return {
+      sector: item.sector,
+      deficit,
+      recommended: item.recommendedStocks
+    };
+  }).filter(d => d.deficit > 0).sort((a, b) => b.deficit - a.deficit);
+
+  const totalDeficit = deficits.reduce((sum, d) => sum + d.deficit, 0);
+
+  for (let m = 1; m <= months; m++) {
+    const monthAllocations = deficits.map(d => {
+      const share = totalDeficit > 0 ? d.deficit / totalDeficit : 0;
+      const amt = Math.round(monthlySipAmount * share);
+      return {
+        sector: d.sector,
+        amount: amt,
+        percentage: monthlySipAmount > 0 ? Number(((amt / monthlySipAmount) * 100).toFixed(1)) : 0,
+        suggestedStocks: d.recommended.slice(0, 2).map(s => s.symbol),
+        rationale: `Phase ${m} SIP tranche accumulating ${d.sector} leaders.`
+      };
+    }).filter(a => a.amount > 500);
+
+    roadmap.push({
+      month: m,
+      title: `Month ${m} Execution Plan`,
+      monthlyAmount: monthlySipAmount,
+      sectorAllocations: monthAllocations
+    });
+  }
+
+  return roadmap;
+}
+
+/**
+ * Formats orders as a Zerodha Kite Basket JSON and Groww CSV
+ */
+export function generateBrokerBaskets(
+  orders: SectorRebalanceOrder[]
+): {
+  zerodhaJson: string;
+  growwCsv: string;
+  basketCount: number;
+} {
+  const buyOrders = orders.filter(o => o.action === 'BUY');
+  const basketItems: BrokerBasketOrder[] = [];
+
+  buyOrders.forEach(o => {
+    o.suggestedStocks.forEach(sym => {
+      const stockMeta = SECTOR_RECOMMENDED_STOCKS[o.sector]?.find(s => s.symbol === sym);
+      const price = stockMeta?.price || 1000;
+      const allocatedPerStock = Math.round(o.amount / Math.max(1, o.suggestedStocks.length));
+      const qty = Math.max(1, Math.floor(allocatedPerStock / price));
+
+      basketItems.push({
+        tradingsymbol: sym,
+        exchange: sym.includes('.') || !['AAPL', 'NVDA', 'MSFT'].includes(sym) ? 'NSE' : 'NASDAQ',
+        transaction_type: 'BUY',
+        order_type: 'MARKET',
+        product: 'CNC',
+        quantity: qty,
+        price,
+        sector: o.sector
+      });
+    });
+  });
+
+  const zerodhaPayload = basketItems.map(item => ({
+    variety: 'regular',
+    tradingsymbol: item.tradingsymbol,
+    exchange: item.exchange,
+    transaction_type: item.transaction_type,
+    order_type: item.order_type,
+    quantity: item.quantity,
+    price: 0,
+    product: item.product,
+    validity: 'DAY'
+  }));
+
+  let growwCsv = `Symbol,Exchange,OrderType,Action,Quantity,EstimatedPrice,Sector\n`;
+  basketItems.forEach(item => {
+    growwCsv += `${item.tradingsymbol},${item.exchange},MARKET,BUY,${item.quantity},${item.price},"${item.sector}"\n`;
+  });
+
+  return {
+    zerodhaJson: JSON.stringify(zerodhaPayload, null, 2),
+    growwCsv,
+    basketCount: basketItems.length
+  };
+}
+
+/**
  * Calculates sector diversification health score (0 to 100)
  */
 export function calculateSectorHealthScore(
@@ -497,18 +952,15 @@ export function calculateSectorHealthScore(
 ): { score: number; label: 'Optimal' | 'Good' | 'Moderate Risk' | 'High Risk'; summary: string } {
   let score = 100;
 
-  // Penalty for excessive concentration in a single sector
   if (maxConcentration > 45) score -= 35;
   else if (maxConcentration > 35) score -= 20;
   else if (maxConcentration > 28) score -= 10;
 
-  // Penalty for missing core sectors (0% in Healthcare, FMCG, Banking)
   const missingCore = items.filter(
     i => (i.sector === 'Healthcare & Pharma' || i.sector === 'FMCG & Consumer Staples' || i.sector === 'Banking & Financials') && i.value === 0
   );
   score -= missingCore.length * 12;
 
-  // Penalty for high aggregate drift
   const totalDrift = items.reduce((sum, i) => sum + Math.abs(i.driftPercent), 0);
   if (totalDrift > 60) score -= 20;
   else if (totalDrift > 35) score -= 10;
