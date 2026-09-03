@@ -18,6 +18,7 @@ import { GoalList } from './components/goals/GoalList';
 import { AddGoalModal } from './components/goals/AddGoalModal';
 import { CalculatorSuite } from './components/calculators/CalculatorSuite';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
+import { SectorBalancingView } from './components/sector-balancing/SectorBalancingView';
 import { SettingsView } from './components/settings/SettingsView';
 import { CsvImportModal } from './components/import-export/CsvImportModal';
 import { DataBackupModal } from './components/import-export/DataBackupModal';
@@ -136,6 +137,10 @@ const MainAppContent: React.FC = () => {
               onOpenDetailModal={handleOpenStockDetail}
               onOpenBuyModal={handleOpenBuyStock}
             />
+          )}
+
+          {activeTab === 'sector_balancing' && (
+            <SectorBalancingView />
           )}
 
           {activeTab === 'liabilities' && (

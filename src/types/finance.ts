@@ -284,6 +284,7 @@ export type ActiveTab =
   | 'dashboard'
   | 'assets'
   | 'watchlist'
+  | 'sector_balancing'
   | 'liabilities'
   | 'cashflow'
   | 'goals'
@@ -307,5 +308,64 @@ export interface YahooSearchResult {
   exchDisp: string;
   typeDisp: string;
   currency: CurrencyCode;
+}
+
+export type EquitySector =
+  | 'Banking & Financials'
+  | 'Information Technology & AI'
+  | 'Energy & Conglomerate'
+  | 'Automobile & EV'
+  | 'FMCG & Consumer Staples'
+  | 'Healthcare & Pharma'
+  | 'Infra, Defence & Capex'
+  | 'Metals & Mining'
+  | 'Telecommunications & Internet'
+  | 'Retail & Discretionary'
+  | 'Other / Diversified';
+
+export interface SectorHoldingContribution {
+  name: string;
+  symbol: string;
+  value: number;
+  percentageOfSector: number;
+}
+
+export interface SectorRecommendedStock {
+  symbol: string;
+  name: string;
+  rationale: string;
+  peRatio?: number;
+  price?: number;
+  currency?: CurrencyCode;
+}
+
+export interface SectorAllocationItem {
+  sector: EquitySector;
+  value: number; // in base currency
+  percentage: number; // 0 to 100
+  targetPercentage: number; // 0 to 100
+  driftPercent: number; // current % - target %
+  driftStatus: 'OVERWEIGHT' | 'UNDERWEIGHT' | 'BALANCED';
+  holdings: SectorHoldingContribution[];
+  recommendedStocks: SectorRecommendedStock[];
+  color: string;
+}
+
+export interface SectorBenchmarkModel {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  weights: Record<EquitySector, number>;
+}
+
+export interface SectorRebalanceOrder {
+  sector: EquitySector;
+  action: 'BUY' | 'TRIM' | 'HOLD';
+  amount: number; // in INR
+  currentPercent: number;
+  targetPercent: number;
+  suggestedStocks: string[];
+  rationale: string;
 }
 

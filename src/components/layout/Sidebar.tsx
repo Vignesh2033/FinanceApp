@@ -10,6 +10,7 @@ import {
   Target,
   Calculator,
   PieChart,
+  Scale,
   Settings,
   ShieldCheck,
   DownloadCloud
@@ -32,6 +33,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'assets', label: 'Assets', icon: Coins, badge: profileAssets.length },
     { id: 'watchlist', label: 'Stock Watchlist', icon: TrendingUp, badge: watchlist.length },
+    { id: 'sector_balancing', label: 'Sector Balancing', icon: Scale },
     { id: 'liabilities', label: 'Liabilities & Debt', icon: Landmark, badge: profileLiabilities.length },
     { id: 'cashflow', label: 'Cash Flow & Budget', icon: ArrowUpDown },
     { id: 'goals', label: 'Goals & FIRE', icon: Target, badge: profileGoals.length },
