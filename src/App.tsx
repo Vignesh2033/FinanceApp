@@ -22,6 +22,7 @@ import { SectorBalancingView } from './components/sector-balancing/SectorBalanci
 import { SettingsView } from './components/settings/SettingsView';
 import { CsvImportModal } from './components/import-export/CsvImportModal';
 import { DataBackupModal } from './components/import-export/DataBackupModal';
+import { CloudSyncModal } from './components/cloud/CloudSyncModal';
 import { RecordSnapshotModal } from './components/dashboard/RecordSnapshotModal';
 import { Asset, Liability, CashflowItem, Goal, WatchlistItem } from './types/finance';
 
@@ -29,6 +30,7 @@ const MainAppContent: React.FC = () => {
   const { activeTab } = useFinance();
 
   // Modals state
+  const [isCloudModalOpen, setIsCloudModalOpen] = useState(false);
   const [isAddAssetOpen, setIsAddAssetOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
 
@@ -103,6 +105,7 @@ const MainAppContent: React.FC = () => {
         onOpenCsvImport={() => setIsCsvImportOpen(true)}
         onOpenSnapshotModal={() => setIsSnapshotModalOpen(true)}
         onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+        onOpenCloudModal={() => setIsCloudModalOpen(true)}
       />
 
       {/* Sidebar & Main View Layout */}
@@ -174,12 +177,18 @@ const MainAppContent: React.FC = () => {
             <SettingsView
               onOpenExportModal={() => setIsDataBackupOpen(true)}
               onOpenCsvImport={() => setIsCsvImportOpen(true)}
+              onOpenCloudModal={() => setIsCloudModalOpen(true)}
             />
           )}
         </main>
       </div>
 
       {/* Modals Container */}
+      <CloudSyncModal
+        isOpen={isCloudModalOpen}
+        onClose={() => setIsCloudModalOpen(false)}
+      />
+
       <AddAssetModal
         isOpen={isAddAssetOpen}
         onClose={() => { setIsAddAssetOpen(false); setEditingAsset(null); }}

@@ -21,17 +21,20 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  Activity
+  Activity,
+  Cloud
 } from 'lucide-react';
 
 interface SettingsViewProps {
   onOpenExportModal: () => void;
   onOpenCsvImport: () => void;
+  onOpenCloudModal?: () => void;
 }
 
 export const SettingsView: React.FC<SettingsViewProps> = ({
   onOpenExportModal,
-  onOpenCsvImport
+  onOpenCsvImport,
+  onOpenCloudModal
 }) => {
   const {
     currency,
@@ -220,7 +223,45 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
         )}
       </div>
 
-      {/* 3. Display Preferences Card */}
+      {/* 3. E2EE Cloud Storage & Multi-Device Sync Card */}
+      <div className="p-5 rounded-3xl bg-white dark:bg-[#141a17] border border-gray-200/80 dark:border-gray-800 shadow-xs space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-bold text-gray-900 dark:text-white text-base font-display flex items-center gap-2">
+            <Cloud className="w-4 h-4 text-blue-500" />
+            <span>End-to-End Encrypted Cloud Storage & Sync</span>
+          </h3>
+
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border border-blue-300/60 font-bold">
+            🔒 AES-256 E2EE
+          </span>
+        </div>
+
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          Sync your encrypted portfolio across Desktop and Mobile using Google Drive, Dropbox, Private GitHub Gist, or custom WebDAV with zero data leaks.
+        </p>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+          <div className="space-y-0.5 text-xs">
+            <span className="font-bold text-gray-900 dark:text-white block">
+              Cloud Vault Status: <span className="font-mono text-emerald-600 dark:text-emerald-400">Ready</span>
+            </span>
+            <span className="text-gray-400 text-[11px] font-mono">
+              Last Synced: {lastQuotesSyncedAt || 'Local Device Vault'}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenCloudModal}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-xs transition-all cursor-pointer active:scale-95"
+          >
+            <Cloud className="w-4 h-4" />
+            <span>Open Cloud Vault & Sync Console</span>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Display Preferences Card */}
       <div className="p-5 rounded-3xl bg-white dark:bg-[#141a17] border border-gray-200/80 dark:border-gray-800 shadow-xs space-y-4">
         <h3 className="font-bold text-gray-900 dark:text-white text-base font-display flex items-center gap-2">
           <Globe className="w-4 h-4 text-emerald-600" />

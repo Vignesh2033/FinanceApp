@@ -15,7 +15,8 @@ import {
   Sparkles,
   ChevronDown,
   Camera,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Cloud
 } from 'lucide-react';
 
 interface NavbarProps {
@@ -26,6 +27,7 @@ interface NavbarProps {
   onOpenCsvImport: () => void;
   onOpenSnapshotModal: () => void;
   onOpenMobileSidebar: () => void;
+  onOpenCloudModal: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -36,6 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenCsvImport,
   onOpenSnapshotModal,
   onOpenMobileSidebar,
+  onOpenCloudModal,
 }) => {
   const {
     currency,
@@ -48,7 +51,9 @@ export const Navbar: React.FC<NavbarProps> = ({
     toggleDarkMode,
     isDemoMode,
     resetToDemoData,
-    addSnapshot
+    addSnapshot,
+    cloudConfig,
+    isCloudSyncing
   } = useFinance();
 
   const [showQuickAdd, setShowQuickAdd] = useState(false);
@@ -206,6 +211,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               )}
             </div>
+
+            {/* Cloud Sync Button */}
+            <button
+              onClick={onOpenCloudModal}
+              className={`p-1.5 sm:px-2.5 sm:py-1.5 rounded-lg border transition-all cursor-pointer flex items-center gap-1.5 ${
+                cloudConfig.enabled
+                  ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300'
+                  : 'bg-gray-50 dark:bg-gray-800/60 border-gray-200 dark:border-gray-700/60 text-gray-600 dark:text-gray-300 hover:bg-gray-100'
+              }`}
+              title={cloudConfig.enabled ? `E2EE Cloud Sync Active (${cloudConfig.provider})` : 'Configure Cloud Storage & Sync'}
+            >
+              <Cloud className={`w-4 h-4 text-emerald-600 dark:text-emerald-400 ${isCloudSyncing ? 'animate-pulse' : ''}`} />
+              <span className="hidden sm:inline text-xs font-semibold">
+                {isCloudSyncing ? 'Syncing...' : cloudConfig.enabled ? 'Cloud Vault' : 'Cloud'}
+              </span>
+            </button>
 
             {/* Privacy Toggle (Mask values with ••••••) */}
             <button

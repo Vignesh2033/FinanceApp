@@ -12,8 +12,18 @@ import {
   WatchlistItem,
   WatchlistFolder,
   WatchlistAlert,
-  MarketIndex
+  MarketIndex,
+  CloudSyncConfig,
+  CloudBackupRevision,
+  CloudSyncResult
 } from '../types/finance';
+import {
+  loadCloudConfig,
+  saveCloudConfig,
+  getCloudRevisions,
+  syncPortfolioToCloud,
+  restorePortfolioFromCloud
+} from '../utils/cloudSyncService';
 import {
   INITIAL_ASSETS,
   INITIAL_LIABILITIES,
@@ -108,6 +118,16 @@ interface FinanceContextType {
   createWatchlistFolder: (name: string, icon?: string, description?: string) => void;
   deleteWatchlistFolder: (id: string) => void;
   toggleStockInFolder: (folderId: string, stockId: string) => void;
+
+  // Cloud Storage & Multi-Device Sync
+  cloudConfig: CloudSyncConfig;
+  setCloudConfig: (config: CloudSyncConfig) => void;
+  cloudRevisions: CloudBackupRevision[];
+  isCloudSyncing: boolean;
+  lastCloudSyncResult: CloudSyncResult | null;
+  syncToCloud: (masterPassword?: string) => Promise<CloudSyncResult>;
+  restoreFromCloud: (masterPassword?: string) => Promise<boolean>;
+  refreshCloudRevisions: () => void;
 
   // Stock Alerts Engine
   stockAlerts: WatchlistAlert[];
@@ -212,6 +232,71 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   const [activeFolderId, setActiveFolderId] = useState<string>('folder-all');
+
+  // Cloud Storage & Multi-Device Sync State
+  const [cloudConfig, setCloudConfigState] = useState<CloudSyncConfig>(() => loadCloudConfig());
+  const [cloudRevisions, setCloudRevisions] = useState<CloudBackupRevision[]>(() => getCloudRevisions());
+  const [isCloudSyncing, setIsCloudSyncing] = useState<boolean>(false);
+  const [lastCloudSyncResult, setLastCloudSyncResult] = useState<CloudSyncResult | null>(null);
+
+  const setCloudConfig = (cfg: CloudSyncConfig) => {
+    setCloudConfigState(cfg);
+    saveCloudConfig(cfg);
+  };
+
+  const refreshCloudRevisions = () => {
+    setCloudRevisions(getCloudRevisions());
+  };
+
+  const syncToCloud = async (masterPassword?: string): Promise<CloudSyncResult> => {
+    setIsCloudSyncing(true);
+    try {
+      const res = await syncPortfolioToCloud(
+        {
+          assets,
+          liabilities,
+          goals,
+          cashflow,
+          snapshots,
+          watchlist,
+          currency,
+          activeProfile
+        },
+        cloudConfig,
+        masterPassword
+      );
+      setLastCloudSyncResult(res);
+      refreshCloudRevisions();
+      return res;
+    } catch (err: any) {
+      const failedRes: CloudSyncResult = {
+        success: false,
+        error: err?.message || 'Cloud sync failed',
+        timestamp: new Date().toISOString()
+      };
+      setLastCloudSyncResult(failedRes);
+      return failedRes;
+    } finally {
+      setIsCloudSyncing(false);
+    }
+  };
+
+  const restoreFromCloud = async (masterPassword?: string): Promise<boolean> => {
+    setIsCloudSyncing(true);
+    try {
+      const res = await restorePortfolioFromCloud(cloudConfig, masterPassword);
+      if (res && res.portfolioData) {
+        restoreBackup(res.portfolioData);
+        refreshCloudRevisions();
+        return true;
+      }
+      return false;
+    } catch (err) {
+      throw err;
+    } finally {
+      setIsCloudSyncing(false);
+    }
+  };
 
   const [stockAlerts, setStockAlerts] = useState<WatchlistAlert[]>(() => {
     const saved = localStorage.getItem(STORAGE_KEYS.ALERTS);
@@ -882,6 +967,14 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         createWatchlistFolder,
         deleteWatchlistFolder,
         toggleStockInFolder,
+        cloudConfig,
+        setCloudConfig,
+        cloudRevisions,
+        isCloudSyncing,
+        lastCloudSyncResult,
+        syncToCloud,
+        restoreFromCloud,
+        refreshCloudRevisions,
         marketIndices,
         isRefreshingQuotes,
         lastQuotesSyncedAt,

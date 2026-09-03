@@ -416,3 +416,42 @@ export interface BrokerBasketOrder {
   sector: EquitySector;
 }
 
+export type CloudProviderType = 'github_gist' | 'google_drive' | 'dropbox' | 'webdav_custom';
+
+export interface CloudSyncConfig {
+  provider: CloudProviderType;
+  enabled: boolean;
+  autoSyncInterval: number; // in minutes: 0 = manual, 15, 60, 1440
+  encrypted: boolean;
+  lastSyncedAt?: string;
+  token?: string;
+  gistId?: string;
+  endpointUrl?: string;
+  username?: string;
+  password?: string;
+  deviceName?: string;
+}
+
+export interface CloudBackupRevision {
+  id: string;
+  timestamp: string;
+  provider: CloudProviderType;
+  deviceName: string;
+  assetCount: number;
+  liabilityCount: number;
+  goalCount: number;
+  netWorthINR: number;
+  version: string;
+  encrypted: boolean;
+  payloadSnippet?: string;
+}
+
+export interface CloudSyncResult {
+  success: boolean;
+  error?: string;
+  timestamp: string;
+  revisionId?: string;
+  assetCount?: number;
+}
+
+
