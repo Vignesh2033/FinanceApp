@@ -285,6 +285,7 @@ export type ActiveTab =
   | 'assets'
   | 'watchlist'
   | 'sector_balancing'
+  | 'market_radar'
   | 'liabilities'
   | 'cashflow'
   | 'goals'
@@ -453,5 +454,60 @@ export interface CloudSyncResult {
   revisionId?: string;
   assetCount?: number;
 }
+
+export type SentimentZone = 'EXTREME_FEAR' | 'FEAR' | 'NEUTRAL' | 'GREED' | 'EXTREME_GREED';
+
+export interface MarketPillarScore {
+  id: string;
+  name: string;
+  category: string;
+  score: number; // 0 (Extreme Fear) to 100 (Extreme Greed)
+  weight: number; // e.g. 0.20
+  currentValStr: string;
+  benchmarkStr: string;
+  status: 'EXTREME_FEAR' | 'FEAR' | 'NEUTRAL' | 'GREED' | 'EXTREME_GREED';
+  statusLabel: string;
+  description: string;
+  badgeColor: string;
+}
+
+export interface TacticalAllocationAdvice {
+  zone: SentimentZone;
+  headline: string;
+  sipMultiplier: number; // e.g. 1.3 for +30%
+  sipAdvice: string;
+  cashDeploymentPercent: number; // e.g. 20 for deploy 20% dry powder
+  cashAdvice: string;
+  equityStance: 'AGGRESSIVE_BUY' | 'SELECTIVE_ACCUMULATION' | 'HOLD_REBALANCE' | 'TRIM_EUPHORIA' | 'DEFENSIVE_CASH';
+  keyAction: string;
+  rationale: string;
+}
+
+export interface ValuationBandPoint {
+  date: string;
+  yearMonth: string;
+  niftyPE: number;
+  niftyPrice: number;
+  upperBand: number; // +1 SD (24.5)
+  medianBand: number; // Median (20.5)
+  lowerBand: number; // -1 SD (17.5)
+  eventLabel?: string;
+}
+
+export interface FearGreedData {
+  compositeScore: number; // 0 to 100
+  zone: SentimentZone;
+  label: string;
+  description: string;
+  pillars: MarketPillarScore[];
+  tacticalAdvice: TacticalAllocationAdvice;
+  lastUpdated: string;
+  niftyCurrentPrice: number;
+  niftyCurrentPE: number;
+  indiaVix: number;
+  buffettIndicatorPercent: number;
+  erpSpreadPercent: number;
+}
+
 
 

@@ -19,6 +19,7 @@ import { AddGoalModal } from './components/goals/AddGoalModal';
 import { CalculatorSuite } from './components/calculators/CalculatorSuite';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { SectorBalancingView } from './components/sector-balancing/SectorBalancingView';
+import { MarketSentimentView } from './components/market-sentiment/MarketSentimentView';
 import { SettingsView } from './components/settings/SettingsView';
 import { CsvImportModal } from './components/import-export/CsvImportModal';
 import { DataBackupModal } from './components/import-export/DataBackupModal';
@@ -144,6 +145,10 @@ const MainAppContent: React.FC = () => {
 
           {activeTab === 'sector_balancing' && (
             <SectorBalancingView />
+          )}
+
+          {activeTab === 'market_radar' && (
+            <MarketSentimentView />
           )}
 
           {activeTab === 'liabilities' && (

@@ -11,6 +11,7 @@ import {
   Calculator,
   PieChart,
   Scale,
+  Gauge,
   Settings,
   ShieldCheck,
   DownloadCloud
@@ -34,6 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'assets', label: 'Assets', icon: Coins, badge: profileAssets.length },
     { id: 'watchlist', label: 'Stock Watchlist', icon: TrendingUp, badge: watchlist.length },
     { id: 'sector_balancing', label: 'Sector Balancing', icon: Scale },
+    { id: 'market_radar', label: 'Market Sentiment', icon: Gauge },
     { id: 'liabilities', label: 'Liabilities & Debt', icon: Landmark, badge: profileLiabilities.length },
     { id: 'cashflow', label: 'Cash Flow & Budget', icon: ArrowUpDown },
     { id: 'goals', label: 'Goals & FIRE', icon: Target, badge: profileGoals.length },
